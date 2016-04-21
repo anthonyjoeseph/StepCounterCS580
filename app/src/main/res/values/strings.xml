@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">StepSensor</string>
+    <string name="stepLabel">Number of Steps:</string>
+    <string name="defaultStepNumber">0</string>
+    <string name="stepButton">STEP</string>
 </resources>
