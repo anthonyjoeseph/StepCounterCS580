@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import static android.hardware.Sensor.*;
+import static java.lang.Math.*;
 
 public class StepActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -56,14 +57,16 @@ public class StepActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume(){
         super.onResume();
         activityIsRunning = true;
+        Sensor accelerometerSensor = sensorManager.getDefaultSensor(TYPE_LINEAR_ACCELERATION);
         Sensor countSensor = sensorManager.getDefaultSensor(TYPE_STEP_COUNTER);
         if (countSensor != null) {
+            sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_UI);
             sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_UI);
         } else {
             Toast.makeText(this, "Count sensor not available!", Toast.LENGTH_LONG).show();
         }
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -77,15 +80,28 @@ public class StepActivity extends AppCompatActivity implements SensorEventListen
         String localizedStepString = String.format(Locale.getDefault(), "%d", stepCount);
         stepCountView.setText(localizedStepString);
     }
-
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if(activityIsRunning){
-            incrementStepCount();
+        switch(sensorEvent.sensor.getType()){
+            case TYPE_STEP_COUNTER:
+                if(activityIsRunning){
+                    incrementStepCount();
+                }
+                break;
+            case TYPE_LINEAR_ACCELERATION:
+                float X = sensorEvent.values[0];
+                float Y = sensorEvent.values[1];
+                float Z = sensorEvent.values[2];
+                double vectorLength  = sqrt((X * X) + (Y * Y) + (Z * Z));
+                System.out.println(vectorLength);
+                break;
+            default:
+                break;
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+
     }
 }
