@@ -11,27 +11,62 @@
     tools:context="com.example.cs580s.stepsensor.StepActivity">
 
     <TextView
-        android:text="@string/stepLabel"
+        android:text="@string/walkingStepsLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView2" />
+        android:id="@+id/textView2"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/defaultStepNumber"
-        android:id="@+id/stepCounter"
-        android:layout_alignParentTop="true"
+        android:text="@string/walkingSteps"
+        android:id="@+id/walkingStepCounter"
+        android:layout_alignTop="@+id/textView2"
         android:layout_toRightOf="@+id/textView2"
-        android:layout_toEndOf="@+id/textView2" />
+        android:layout_toEndOf="@+id/textView2"
+        android:layout_marginLeft="36dp"
+        android:layout_marginStart="36dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/stepButton"
-        android:id="@+id/stepButton"
-        android:layout_centerVertical="true"
+        android:text="@string/startButton"
+        android:id="@+id/startButton"
+        android:layout_marginTop="61dp"
+        android:layout_below="@+id/runningStepCounter"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_marginRight="46dp"
+        android:layout_marginEnd="46dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/runningStepsLabel"
+        android:id="@+id/textView"
+        android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/runningSteps"
+        android:id="@+id/runningStepCounter"
+        android:layout_alignTop="@+id/textView"
+        android:layout_alignLeft="@+id/walkingStepCounter"
+        android:layout_alignStart="@+id/walkingStepCounter" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stopButton"
+        android:id="@+id/stopButton"
+        android:layout_alignTop="@+id/startButton"
+        android:layout_alignRight="@+id/runningStepCounter"
+        android:layout_alignEnd="@+id/runningStepCounter" />
 
 </RelativeLayout>
