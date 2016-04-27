@@ -24,10 +24,9 @@ public class StepActivity extends AppCompatActivity implements SensorEventListen
 
     private SensorManager sensorManager;
     private boolean activityIsRunning;
-    private boolean isCountingSteps;
     private boolean stepWasFlagged;
-    private int walkingStepCount = 0;
-    private int runningStepCount = 0;
+    private SteppingState steppingState;
+    private static final String steppingStateID = "steppingStateID";
     private TextView walkingStepCountView;
     private TextView runningStepCountView;
 
@@ -36,11 +35,15 @@ public class StepActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        isCountingSteps = false;
         stepWasFlagged = false;
 
         setContentView(R.layout.activity_step);
 
+        if(savedInstanceState == null){
+            steppingState = new SteppingState();
+        }else{
+            steppingState = (SteppingState) savedInstanceState.getSerializable(StepActivity.steppingStateID);
+        }
         walkingStepCountView = (TextView) findViewById(R.id.walkingStepCounter);
         runningStepCountView = (TextView) findViewById(R.id.runningStepCounter);
         updateWalkingStepCountView();
@@ -68,6 +71,12 @@ public class StepActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putSerializable(steppingStateID, steppingState);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     protected void onResume(){
@@ -93,29 +102,27 @@ public class StepActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void startCounting() {
-        isCountingSteps = true;
-        walkingStepCount = 0;
-        runningStepCount = 0;
+        steppingState.reset();
         updateWalkingStepCountView();
         updateRunningStepCountView();
     }
 
     private void stopCounting(){
-        isCountingSteps = false;
+        steppingState.setCounting(false);
     }
 
     private void updateWalkingStepCountView(){
-        String localizedStepString = String.format(Locale.getDefault(), "%d", walkingStepCount);
+        String localizedStepString = String.format(Locale.getDefault(), "%d", steppingState.getWalkingSteps());
         walkingStepCountView.setText(localizedStepString);
     }
 
     private void updateRunningStepCountView(){
-        String localizedStepString = String.format(Locale.getDefault(), "%d", runningStepCount);
+        String localizedStepString = String.format(Locale.getDefault(), "%d", steppingState.getRunningSteps());
         runningStepCountView.setText(localizedStepString);
     }
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if(isCountingSteps) {
+        if(steppingState.isCounting()) {
             switch (sensorEvent.sensor.getType()) {
                 case TYPE_STEP_COUNTER:
                     if (activityIsRunning) {
@@ -130,11 +137,11 @@ public class StepActivity extends AppCompatActivity implements SensorEventListen
                         float Z = sensorEvent.values[2];
                         double vectorLength = sqrt((X * X) + (Y * Y) + (Z * Z));
                         if (vectorLength > 10.0) {
-                            runningStepCount++;
+                            steppingState.incrementRunningSteps();
                             updateRunningStepCountView();
                         } else {
                             System.out.println(vectorLength);
-                            walkingStepCount++;
+                            steppingState.incrementWalkingSteps();
                             updateWalkingStepCountView();
                         }
                     }
